@@ -1,15 +1,17 @@
 ﻿using Catalog.API.Application.ProductService.Queries;
 using Catalog.API.Domain.Entities;
+using Marten;
 using MediatR;
 
 namespace Catalog.API.Application.ProductService.Handler
 {
-    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, List<Product>>
+    public class GetAllProductsQueryHandler(IDocumentSession documentSession) : IRequestHandler<GetAllProductsQuery, IReadOnlyList<Product>>
     {
-        public async Task<List<Product>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+        private readonly IDocumentSession _documentSession = documentSession;
+
+        public async Task<IReadOnlyList<Product>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
-            List<Product> products = [];
-            return products;
+            return await _documentSession.Query<Product>().ToListAsync(cancellationToken); 
         }
     }
 }
